@@ -1,8 +1,11 @@
 "use server";
+
 import { GameStats } from "@/components/game-searcher";
 import { safeFail, SafeResponse } from "@/lib/utils";
+import { BGGschema } from "@/services/BGG";
 import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
+
 const parser = new XMLParser({
   attributeNamePrefix: "",
   ignoreAttributes: false,
@@ -15,7 +18,7 @@ const searchBGGschema = z.object({
   }),
 });
 
-const BASE_BGG_API = "https://boardgamegeek.com/xmlapi";
+const BASE_BGG_API = "https://boardgamegeek.com/xmlapi/";
 
 export const getGameId = async (
   game: string
@@ -30,7 +33,7 @@ export const getGameId = async (
       return {
         data: null,
         success: false,
-        error: "Unknown game",
+        error: `Game "${game}" not found`,
       };
     return {
       data: { objectId: parseInt(data.boardgames.boardgame.objectid) },
@@ -43,18 +46,26 @@ export const getGameId = async (
 };
 
 export const getGameStats = async (
-  state: GameStats,
+  _: GameStats,
   formData: FormData
-): Promise<GameStats> => {
-  const game = z.string().parse(formData.get("game"));
-  const { data, success, error } = await getGameId(game);
+): Promise<GameStats<z.infer<typeof BGGschema>>> => {
+  const safeParseData = z.string().safeParse(formData.get("game"));
+
+  if (!safeParseData.success)
+    return {
+      data: null,
+      success: false,
+      error: `Missing "game" entry in formData`,
+      idle: false,
+    };
+  const { data, success, error } = await getGameId(safeParseData.data);
   if (!success) return { data: null, success: false, error, idle: false };
   try {
     const res = await fetch(`${BASE_BGG_API}/boardgame/${data.objectId}`);
     if (!res.ok)
       return { data: null, success: false, error: res.statusText, idle: false };
     const xmlContent = await res.text();
-    const json = parser.parse(xmlContent);
+    const json = BGGschema.parse(parser.parse(xmlContent));
     return {
       data: json,
       success: true,

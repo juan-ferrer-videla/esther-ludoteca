@@ -6,14 +6,21 @@ import { Label } from "@/components/ui/label";
 import { SafeResponse } from "@/lib/utils";
 import { useActionState } from "react";
 import { Button } from "./ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
-export type GameStats = SafeResponse & { idle: boolean };
+//game
+//user
+
+export type GameStats<
+  T extends Record<string, unknown> = Record<string, unknown>
+> = SafeResponse<T> & { idle: boolean };
 
 export const GameSearcher = () => {
   const initialState: GameStats = {
     data: null,
     success: false,
-    error: "Unknown error",
+    error: "",
     idle: true,
   };
 
@@ -24,7 +31,7 @@ export const GameSearcher = () => {
 
   return (
     <>
-      <form action={formAction}>
+      <form action={formAction} className="mb-6">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label htmlFor="game">Game</Label>
           <Input id="game" placeholder="Busca tu juego" name="game" />
@@ -34,9 +41,16 @@ export const GameSearcher = () => {
           {pending ? "Buscando..." : "Buscar"}
         </Button>
       </form>
-      {!state.idle && (
-        <pre className="mt-6">{JSON.stringify(state, null, 2)}</pre>
-      )}
+      {!state.idle &&
+        (!state.success ? (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{state.error}</AlertDescription>
+          </Alert>
+        ) : (
+          <pre>{JSON.stringify(state.data, null, 2)}</pre>
+        ))}
     </>
   );
 };
