@@ -79,7 +79,7 @@ export const columns: ColumnDef<CollectionItem>[] = [
     enableHiding: false,
     cell: () => {
       return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
               <span className="sr-only">Abrir menu</span>
@@ -98,7 +98,7 @@ export const columns: ColumnDef<CollectionItem>[] = [
   },
 ];
 
-export function DataTableDemo({ data }: { data: CollectionItem[] }) {
+export function CollectionDataTable({ data }: { data: CollectionItem[] }) {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,

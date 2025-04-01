@@ -1,5 +1,5 @@
 import { getGameCollection } from "@/_actions/bgg";
-import { DataTableDemo } from "@/components/data-table";
+import { CollectionDataTable } from "@/components/data-table";
 
 export default async function Home() {
   const { data, success } = await getGameCollection();
@@ -12,7 +12,7 @@ export default async function Home() {
         Esther ludoteca
       </h1>
 
-      <DataTableDemo data={data.items.filter(({ own }) => own > 0)} />
+      <CollectionDataTable data={data.items.filter(({ own }) => own > 0)} />
     </>
   );
 }
