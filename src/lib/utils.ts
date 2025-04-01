@@ -9,8 +9,8 @@ export function cn(...inputs: ClassValue[]) {
 export type SafeResponse<
   T extends Record<string, unknown> = Record<string, unknown>
 > =
-  | { data: T; success: true; error: null }
-  | { data: null; success: false; error: string };
+  | { data: T; success: true; errors: null }
+  | { data: null; success: false; errors: string[] };
 
 export const safeFail = (error: unknown) => {
   const { data, success } = z.instanceof(Error).safeParse(error);
@@ -18,11 +18,11 @@ export const safeFail = (error: unknown) => {
     return {
       data: null,
       success: false as const,
-      error: "Unknown error",
+      errors: ["Unknown error"],
     };
   return {
     data: null,
     success: false as const,
-    error: data.message,
+    errors: [data.message],
   };
 };

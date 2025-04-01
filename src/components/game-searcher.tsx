@@ -9,9 +9,6 @@ import { Button } from "./ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
-//game
-//user
-
 export type GameStats<
   T extends Record<string, unknown> = Record<string, unknown>
 > = SafeResponse<T> & { idle: boolean };
@@ -20,7 +17,7 @@ export const GameSearcher = () => {
   const initialState: GameStats = {
     data: null,
     success: false,
-    error: "",
+    errors: [],
     idle: true,
   };
 
@@ -46,7 +43,7 @@ export const GameSearcher = () => {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{state.error}</AlertDescription>
+            <AlertDescription>{state.errors}</AlertDescription>
           </Alert>
         ) : (
           <pre>{JSON.stringify(state.data, null, 2)}</pre>
