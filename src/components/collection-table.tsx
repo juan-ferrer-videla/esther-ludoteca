@@ -7,7 +7,6 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -27,7 +26,7 @@ export const CollectionTable = ({
 
   return (
     <>
-      <div className="grid w-full max-w-sm items-center gap-1.5">
+      <div className="grid w-full max-w-sm items-center gap-1.5 mb-6">
         <Label htmlFor="game">Game</Label>
         <Input
           id="game"
@@ -51,8 +50,10 @@ export const CollectionTable = ({
         </TableHeader>
         <TableBody>
           {items.item
-            .filter(({ name }) =>
-              name["#text"].toLowerCase().includes(query.toLowerCase())
+            .filter(
+              ({ name, status: { own } }) =>
+                name["#text"].toLowerCase().includes(query.toLowerCase()) &&
+                parseInt(own) > 0
             )
             .map(({ name, subtype, collid, status: { own }, ...rest }) => (
               <TableRow key={collid}>
