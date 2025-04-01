@@ -13,15 +13,9 @@ import {
 } from "@/components/ui/table";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { type SuccessResponse } from "@/lib/utils";
-import { z } from "zod";
-import { collectionSchema } from "@/services/BGG";
+import { CollectionMapped } from "@/services/BGG";
 
-export const CollectionTable = ({
-  items,
-}: {
-  items: SuccessResponse<z.infer<typeof collectionSchema>>["data"]["items"];
-}) => {
+export const CollectionTable = ({ items }: CollectionMapped) => {
   const [query, setQuery] = useState("");
 
   return (
@@ -49,19 +43,18 @@ export const CollectionTable = ({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.item
+          {items
             .filter(
-              ({ name, status: { own } }) =>
-                name["#text"].toLowerCase().includes(query.toLowerCase()) &&
-                parseInt(own) > 0
+              ({ name, own }) =>
+                name.toLowerCase().includes(query.toLowerCase()) && own > 0
             )
-            .map(({ name, subtype, collid, status: { own }, ...rest }) => (
-              <TableRow key={collid}>
+            .map(({ name, subtype, id, own, thumbnail }) => (
+              <TableRow key={id}>
                 <TableCell>
-                  {"thumbnail" in rest ? (
+                  {thumbnail ? (
                     <div className="relative w-20 h-20">
                       <img
-                        src={rest.thumbnail}
+                        src={thumbnail}
                         className="absolute w-full h-full object-contain"
                       />
                     </div>
@@ -69,7 +62,7 @@ export const CollectionTable = ({
                     "empty"
                   )}
                 </TableCell>
-                <TableCell className="font-medium">{name["#text"]}</TableCell>
+                <TableCell className="font-medium">{name}</TableCell>
                 <TableCell>{subtype}</TableCell>
                 <TableCell>{own}</TableCell>
               </TableRow>

@@ -2,7 +2,7 @@
 
 import { GameStats } from "@/components/game-searcher";
 import { safeFail, SafeResponse } from "@/lib/utils";
-import { BGGschema, collectionSchema } from "@/services/BGG";
+import { BGGschema, CollectionMapped, collectionSchema } from "@/services/BGG";
 import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 
@@ -92,7 +92,7 @@ export const getGameStats = async (
 };
 
 export const getGameCollection = async (): Promise<
-  SafeResponse<z.infer<typeof collectionSchema>>
+  SafeResponse<CollectionMapped>
 > => {
   try {
     const res = await fetch(COLLECTION_URL);
@@ -108,7 +108,17 @@ export const getGameCollection = async (): Promise<
       };
     }
     return {
-      data: collectionRes.data,
+      data: {
+        items: collectionRes.data.items.item.map(
+          ({ name, status: { own }, collid, subtype, ...rest }) => ({
+            name: name["#text"],
+            own: parseInt(own),
+            id: collid,
+            thumbnail: "thumbnail" in rest ? rest.thumbnail : null,
+            subtype,
+          })
+        ),
+      },
       success: true,
       errors: null,
     };

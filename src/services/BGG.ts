@@ -101,6 +101,21 @@ export const BGGschema = z.object({
   }),
 });
 
+export type TCollection = z.infer<typeof collectionSchema>;
+export type TCollectionItem = TCollection["items"]["item"][number];
+
+export interface CollectionItem {
+  own: number;
+  name: string;
+  id: string;
+  thumbnail: string | null;
+  subtype: string;
+}
+
+export type CollectionMapped = {
+  items: CollectionItem[];
+};
+
 export const collectionSchema = z.object({
   "?xml": z.object({
     version: z.string(),
