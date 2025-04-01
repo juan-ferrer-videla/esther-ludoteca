@@ -7,11 +7,14 @@ import { SafeResponse } from "@/lib/utils";
 import { useActionState } from "react";
 import { Button } from "./ui/button";
 
+export type GameStats = SafeResponse & { idle: boolean };
+
 export const GameSearcher = () => {
-  const initialState: SafeResponse = {
+  const initialState: GameStats = {
     data: null,
     success: false,
     error: "Unknown error",
+    idle: true,
   };
 
   const [state, formAction, pending] = useActionState(
@@ -31,7 +34,9 @@ export const GameSearcher = () => {
           {pending ? "Buscando..." : "Buscar"}
         </Button>
       </form>
-      <pre className="mt-6">{JSON.stringify(state, null, 2)}</pre>
+      {!state.idle && (
+        <pre className="mt-6">{JSON.stringify(state, null, 2)}</pre>
+      )}
     </>
   );
 };

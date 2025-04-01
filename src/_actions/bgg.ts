@@ -1,4 +1,5 @@
 "use server";
+import { GameStats } from "@/components/game-searcher";
 import { safeFail, SafeResponse } from "@/lib/utils";
 import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
@@ -42,23 +43,25 @@ export const getGameId = async (
 };
 
 export const getGameStats = async (
-  state: SafeResponse,
+  state: GameStats,
   formData: FormData
-): Promise<SafeResponse> => {
+): Promise<GameStats> => {
   const game = z.string().parse(formData.get("game"));
   const { data, success, error } = await getGameId(game);
-  if (!success) return { data: null, success: false, error };
+  if (!success) return { data: null, success: false, error, idle: false };
   try {
     const res = await fetch(`${BASE_BGG_API}/boardgame/${data.objectId}`);
-    if (!res.ok) return { data: null, success: false, error: res.statusText };
+    if (!res.ok)
+      return { data: null, success: false, error: res.statusText, idle: false };
     const xmlContent = await res.text();
     const json = parser.parse(xmlContent);
     return {
       data: json,
       success: true,
       error: null,
+      idle: false,
     };
   } catch (error) {
-    return safeFail(error);
+    return { ...safeFail(error), idle: false };
   }
 };
