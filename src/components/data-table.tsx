@@ -144,7 +144,7 @@ export function CollectionDataTable({ data }: { data: CollectionItem[] }) {
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columnas <ChevronDown />
