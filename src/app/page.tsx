@@ -12,7 +12,7 @@ export default async function Home() {
         Esther ludoteca
       </h1>
 
-      <DataTableDemo data={data.items} />
+      <DataTableDemo data={data.items.filter(({ own }) => own > 0)} />
     </>
   );
 }
