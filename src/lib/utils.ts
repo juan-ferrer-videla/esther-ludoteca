@@ -6,7 +6,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type SafeResponse<T extends Record<string, unknown> = {}> =
+export type SafeResponse<
+  T extends Record<string, unknown> = Record<string, unknown>
+> =
   | { data: T; success: true; error: null }
   | { data: null; success: false; error: string };
 
