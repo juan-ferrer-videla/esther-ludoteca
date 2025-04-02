@@ -48,7 +48,9 @@ export default async function Page({
             <p> {minage}</p>
           </li>
         </ul>
-        <img src={image} alt={name} className="grow w-72" />
+        <div className="flex grow justify-center max-w-3xl max-h-[600px]">
+          <img src={image} alt={name} className="object-contain" />
+        </div>
       </section>
     </>
   );
