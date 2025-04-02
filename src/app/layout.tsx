@@ -51,7 +51,21 @@ export default function RootLayout({
             </div>
           </header>
           <main className="container">{children}</main>
-          <footer className="container"></footer>
+
+          <footer className="container py-6">
+            <div className="mb-6 border-t"></div>
+            <p className="text-center text-sm text-muted-foreground">
+              Powered by{" "}
+              <a
+                href="https://www.linkedin.com/in/estherpaz/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground hover:underline"
+              >
+                Esther Paz
+              </a>
+            </p>
+          </footer>
         </ThemeProvider>
       </body>
     </html>
