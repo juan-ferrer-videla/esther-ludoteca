@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/theme-toggle";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,8 +36,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <header className="container py-4">
-            <ModeToggle />
+          <header className="sticky top-0 z-50  bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-6">
+            <div className="container">
+              <div className="flex items-center justify-between  py-4 border-b">
+                <nav>
+                  <ul>
+                    <li>
+                      <Link href={"/"}>Inicio</Link>
+                    </li>
+                  </ul>
+                </nav>
+                <ModeToggle />
+              </div>
+            </div>
           </header>
           <main className="container">{children}</main>
           <footer className="container"></footer>
