@@ -8,6 +8,7 @@ import {
   gameStatsSchema,
 } from "@/services/BGG";
 import { XMLParser } from "fast-xml-parser";
+import { decode } from "html-entities";
 
 const parser = new XMLParser({
   attributeNamePrefix: "",
@@ -47,7 +48,7 @@ export const getGameStats = async (
     } = data.items.item;
     return {
       data: {
-        description,
+        description: decode(description),
         image,
         name: name[0].value,
         maxplayers: parseInt(maxplayers.value),
