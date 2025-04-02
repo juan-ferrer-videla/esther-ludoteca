@@ -1,45 +1,63 @@
 "use server";
 
-import { GameStats } from "@/components/game-searcher";
 import { safeFail, SafeResponse } from "@/lib/utils";
-import { BGGschema, CollectionMapped, collectionSchema } from "@/services/BGG";
+import {
+  CollectionMapped,
+  collectionSchema,
+  GameDetails,
+  gameStatsSchema,
+} from "@/services/BGG";
 import { XMLParser } from "fast-xml-parser";
-import { z } from "zod";
 
 const parser = new XMLParser({
   attributeNamePrefix: "",
   ignoreAttributes: false,
 });
-const searchBGGschema = z.object({
-  boardgames: z.object({
-    boardgame: z.object({
-      objectid: z.string(),
-    }),
-  }),
-});
 
-const BASE_BGG_API = "https://boardgamegeek.com/xmlapi/";
-const COLLECTION_URL =
-  "https://boardgamegeek.com/xmlapi2/collection?username=dodadodadoda";
+const BASE_BGG_API = "https://boardgamegeek.com/xmlapi2";
+const COLLECTION_PATH = "/collection?username=dodadodadoda";
 
-export const getGameId = async (
-  game: string
-): Promise<SafeResponse<{ objectId: number }>> => {
+export const getGameStats = async (
+  id: string
+): Promise<SafeResponse<GameDetails>> => {
   try {
-    const res = await fetch(`${BASE_BGG_API}/search?search=${game}`);
+    const res = await fetch(`${BASE_BGG_API}/thing?id=${id}`);
     if (!res.ok)
-      return { data: null, success: false, errors: [res.statusText] };
-    const xmlContent = await res.text();
-    const json = parser.parse(xmlContent);
-    const { success, data } = searchBGGschema.safeParse(json);
-    if (!success)
       return {
         data: null,
         success: false,
-        errors: [`Game "${game}" not found`],
+        errors: [res.statusText],
       };
+    const xmlContent = await res.text();
+    const { data, success, error } = gameStatsSchema.safeParse(
+      parser.parse(xmlContent)
+    );
+    if (!success) return { data: null, success, errors: [error.message] };
+    const {
+      description,
+      image,
+      maxplayers,
+      maxplaytime,
+      minage,
+      minplayers,
+      minplaytime,
+      playingtime,
+      name,
+      yearpublished,
+    } = data.items.item;
     return {
-      data: { objectId: parseInt(data.boardgames.boardgame.objectid) },
+      data: {
+        description,
+        image,
+        name: name[0].value,
+        maxplayers: parseInt(maxplayers.value),
+        maxplaytime: parseInt(maxplaytime.value),
+        minage: parseInt(minage.value),
+        minplayers: parseInt(minplayers.value),
+        minplaytime: parseInt(minplaytime.value),
+        playingtime: parseInt(playingtime.value),
+        yearpublished: parseInt(yearpublished.value),
+      },
       success: true,
       errors: null,
     };
@@ -48,54 +66,11 @@ export const getGameId = async (
   }
 };
 
-export const getGameStats = async (
-  _: GameStats,
-  formData: FormData
-): Promise<GameStats<z.infer<typeof BGGschema>>> => {
-  const safeParseData = z.string().safeParse(formData.get("game"));
-
-  if (!safeParseData.success)
-    return {
-      data: null,
-      success: false,
-      errors: [`Missing "game" entry in formData`],
-      idle: false,
-    };
-  const { data, success, errors } = await getGameId(safeParseData.data);
-  if (!success)
-    return {
-      data: null,
-      success: false,
-      errors,
-      idle: false,
-    };
-  try {
-    const res = await fetch(`${BASE_BGG_API}/boardgame/${data.objectId}`);
-    if (!res.ok)
-      return {
-        data: null,
-        success: false,
-        errors: [res.statusText],
-        idle: false,
-      };
-    const xmlContent = await res.text();
-    const json = BGGschema.parse(parser.parse(xmlContent));
-    return {
-      data: json,
-      success: true,
-      errors: null,
-      idle: false,
-    };
-  } catch (error) {
-    return { ...safeFail(error), idle: false };
-  }
-};
-
 export const getGameCollection = async (): Promise<
   SafeResponse<CollectionMapped>
 > => {
   try {
-    const res = await fetch(COLLECTION_URL);
+    const res = await fetch(`${BASE_BGG_API}${COLLECTION_PATH}`);
     if (!res.ok)
       return { data: null, success: false, errors: [res.statusText] };
     const xmlContent = await res.text();
@@ -110,12 +85,13 @@ export const getGameCollection = async (): Promise<
     return {
       data: {
         items: collectionRes.data.items.item.map(
-          ({ name, status: { own }, collid, subtype, ...rest }) => ({
+          ({ name, objectid, status: { own }, collid, subtype, ...rest }) => ({
             name: name["#text"],
             own: parseInt(own),
             id: collid,
             thumbnail: "thumbnail" in rest ? rest.thumbnail : null,
             subtype,
+            gameId: objectid,
           })
         ),
       },

@@ -1,5 +1,5 @@
 import { getGameCollection } from "@/_actions/bgg";
-import { CollectionDataTable } from "@/components/data-table";
+import { CollectionDataTable } from "@/components/collection-data-table";
 
 export default async function Home() {
   const { data, success } = await getGameCollection();

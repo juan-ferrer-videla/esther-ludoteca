@@ -14,16 +14,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -36,6 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CollectionItem } from "@/services/BGG";
+import Link from "next/link";
 
 export const columns: ColumnDef<CollectionItem>[] = [
   {
@@ -77,23 +75,8 @@ export const columns: ColumnDef<CollectionItem>[] = [
   {
     id: "actions",
     enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Abrir menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Ver detalles</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+    cell: ({ row }) => {
+      return <Link href={`/game/${row.original.gameId}`}>Ver detalles</Link>;
     },
   },
 ];

@@ -6,13 +6,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type SafeResponse<
-  T extends Record<string, unknown> = Record<string, unknown>
-> = SuccessResponse<T> | { data: null; success: false; errors: string[] };
+export type SafeResponse<T = Record<string, unknown>> =
+  | SuccessResponse<T>
+  | { data: null; success: false; errors: string[] };
 
-export type SuccessResponse<
-  T extends Record<string, unknown> = Record<string, unknown>
-> = { data: T; success: true; errors: null };
+export type SuccessResponse<T = Record<string, unknown>> = {
+  data: T;
+  success: true;
+  errors: null;
+};
 
 export const safeFail = (error: unknown) => {
   const { data, success } = z.instanceof(Error).safeParse(error);
