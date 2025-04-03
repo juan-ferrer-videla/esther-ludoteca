@@ -35,6 +35,15 @@ import {
 import { CollectionItem } from "@/services/BGG";
 import Link from "next/link";
 
+const collectionMap: Record<keyof CollectionItem, string> = {
+  gameId: "ID juego",
+  id: "ID",
+  name: "Nombre",
+  own: "Cantidad",
+  subtype: "Subtipo",
+  thumbnail: "Imagen",
+};
+
 export const columns: ColumnDef<CollectionItem>[] = [
   {
     accessorKey: "thumbnail",
@@ -147,7 +156,8 @@ export function CollectionDataTable({ data }: { data: CollectionItem[] }) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.id in collectionMap &&
+                      collectionMap[column.id as keyof CollectionItem]}
                   </DropdownMenuCheckboxItem>
                 );
               })}
