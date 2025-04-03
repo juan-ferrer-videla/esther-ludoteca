@@ -50,7 +50,7 @@ export const getGameStats = async (
       data: {
         description: decode(description),
         image,
-        name: name[0].value,
+        name: decode(name[0].value),
         maxplayers: parseInt(maxplayers.value),
         maxplaytime: parseInt(maxplaytime.value),
         minage: parseInt(minage.value),
@@ -87,7 +87,7 @@ export const getGameCollection = async (): Promise<
       data: {
         items: collectionRes.data.items.item.map(
           ({ name, objectid, status: { own }, collid, subtype, ...rest }) => ({
-            name: name["#text"],
+            name: decode(name["#text"]),
             own: parseInt(own),
             id: collid,
             thumbnail: "thumbnail" in rest ? rest.thumbnail : null,
