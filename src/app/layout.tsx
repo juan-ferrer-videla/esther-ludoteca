@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased container`}
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased flex flex-col min-h-screen container`}
       >
         <ThemeProvider
           attribute="class"
@@ -50,7 +50,7 @@ export default function RootLayout({
               </div>
             </div>
           </header>
-          <main className="container">{children}</main>
+          <main className="container grow">{children}</main>
 
           <footer className="container py-6">
             <div className="mb-6 border-t"></div>
